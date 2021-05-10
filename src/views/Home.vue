@@ -11,8 +11,16 @@
 </template>
 
 <script>
-// @ is an alias to /src
+import { onMounted } from "vue";
+import { auth } from "../utils/firebase";
 export default {
   name: "Home",
+  setup() {
+    onMounted(() => {
+      auth.onAuthStateChanged((user) => {
+        console.log(user);
+      });
+    });
+  },
 };
 </script>
