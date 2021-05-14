@@ -3,22 +3,28 @@
     <h1>Crear cuenta</h1>
     <form class="ui form" @submit.prevent="onRegister">
       <div class="field">
-        <input 
-            type="text" 
-            placeholder="Correo electronico" 
-            v-model="formData.email"/>
+        <input
+          type="text"
+          placeholder="Correo electronico"
+          v-model="formData.email"
+          :class="{ error: formError.email }"
+        />
       </div>
       <div class="field">
-        <input 
-            type="password" 
-            placeholder="Contraseña" 
-            v-model="formData.password"/>
+        <input
+          type="password"
+          placeholder="Contraseña"
+          v-model="formData.password"
+          :class="{ error: formError.password }"
+        />
       </div>
       <div class="field">
-        <input 
-            type="password" 
-            placeholder="Repetir contraseña" 
-            v-model="formData.repeatPassword"/>
+        <input
+          type="password"
+          placeholder="Repetir contraseña"
+          v-model="formData.repeatPassword"
+          :class="{ error: formError.repeatPassword }"
+        />
       </div>
       <button type="submit" class="ui button positive fluid">Registrar</button>
     </form>
@@ -28,6 +34,8 @@
 </template>
 
 <script>
+import * as Yup from "yup";
+import { ref } from "vue";
 export default {
   name: "Register",
   props: {
@@ -35,13 +43,36 @@ export default {
   },
   setup() {
     let formData = {};
+    let formError = ref({});
 
-    const onRegister = () => {
-        console.log(formData);
+    const schemaForm = Yup.object().shape({
+      email: Yup.string()
+        .email(true)
+        .required(true),
+      password: Yup.string().required(),
+      repeatPassword: Yup.string()
+        .required(true)
+        .oneOf([Yup.ref("password")], true),
+    });
+
+    const onRegister = async () => {
+      console.log(formData);
+      // reiniciar validaciones form
+      formError.value = {};
+      try {
+        await schemaForm.validate(formData, { abortEarly: false });
+        console.log("Todo ok");
+      } catch (err) {
+        err.inner.forEach((error) => {
+          formError.value[error.path] = error.message;
+        });
+        console.log(err);
+      }
     };
     return {
       formData,
-      onRegister
+      onRegister,
+      formError,
     };
   },
 };
