@@ -1,12 +1,7 @@
 <template>
   <div>
     <h1>Estamos en la home</h1>
-    <button class="ui button">
-      Follow
-    </button>
-    <button class="ui primary button">
-      Save
-    </button>
+    <button @click="logout">Cerrar sesión</button>
   </div>
 </template>
 
@@ -21,6 +16,14 @@ export default {
         console.log(user);
       });
     });
+
+    const logout = () => {
+      auth.signOut();
+    };
+
+    return {
+      logout,
+    }
   },
 };
 </script>

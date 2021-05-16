@@ -26,7 +26,13 @@
           :class="{ error: formError.repeatPassword }"
         />
       </div>
-      <button type="submit" class="ui button positive fluid">Registrar</button>
+      <button
+        type="submit"
+        class="ui button positive fluid"
+        :class="{ loading }"
+      >
+        Registrar
+      </button>
     </form>
 
     <p @click="changeForm">Iniciar sesión</p>
@@ -36,6 +42,8 @@
 <script>
 import * as Yup from "yup";
 import { ref } from "vue";
+import { auth } from "../../utils/firebase";
+
 export default {
   name: "Register",
   props: {
@@ -44,6 +52,7 @@ export default {
   setup() {
     let formData = {};
     let formError = ref({});
+    let loading = ref(false);
 
     const schemaForm = Yup.object().shape({
       email: Yup.string()
@@ -56,23 +65,33 @@ export default {
     });
 
     const onRegister = async () => {
-      console.log(formData);
+      // activar el loading hasta que termine
+      loading.value = true;
+
       // reiniciar validaciones form
       formError.value = {};
       try {
         await schemaForm.validate(formData, { abortEarly: false });
-        console.log("Todo ok");
+        // petición a firebase para guardar los datos
+        try {
+          const { email, password } = formData;
+          await auth.createUserWithEmailAndPassword(email, password);
+        } catch (err) {
+          console.log(err);
+        }
       } catch (err) {
         err.inner.forEach((error) => {
           formError.value[error.path] = error.message;
         });
         console.log(err);
       }
+      loading.value = false;
     };
     return {
       formData,
       onRegister,
       formError,
+      loading,
     };
   },
 };
