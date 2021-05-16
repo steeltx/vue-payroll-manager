@@ -1,12 +1,22 @@
 <template>
   <div class="login">
     <h1>Iniciar sesión</h1>
-    <form class="ui form">
+    <form class="ui form" @submit.prevent="onLogin">
       <div class="field">
-        <input type="text" placeholder="Correo electronico" />
+        <input
+          type="text"
+          placeholder="Correo electronico"
+          v-model="formData.email"
+          :class="{error : formError.email }"
+        />
       </div>
       <div class="field">
-        <input type="password" placeholder="Contraseña" />
+        <input
+          type="password"
+          placeholder="Contraseña"
+          v-model="formData.password"
+          :class="{error : formError.password }"
+        />
       </div>
       <button type="submit" class="ui button positive fluid">
         Entrar
@@ -17,10 +27,44 @@
 </template>
 
 <script>
+import { ref } from "vue";
+import * as Yup from "yup";
+
 export default {
   name: "Login",
   props: {
     changeForm: Function,
+  },
+  setup() {
+    let formData = {};
+    let formError = ref({});
+
+    const schemaForm = Yup.object().shape({
+      email: Yup.string()
+        .email(true)
+        .required(true),
+      password: Yup.string().required(true),
+    });
+
+    const onLogin = async () => {
+      // limpiar los errores
+      formError.value = {};
+      try {
+        await schemaForm.validate(formData, { abortEarly: false });
+        console.log("Todo ok");
+      } catch (err) {
+        err.inner.forEach((error) => {
+            // registrar en el objeto de error
+            formError.value[error.path] = error.message;
+        })
+      }
+    };
+
+    return {
+      formData,
+      onLogin,
+      formError
+    };
   },
 };
 </script>
@@ -33,24 +77,24 @@ export default {
   width: 400px;
   border-radius: 10px;
 
-  h1{
-      text-align: center;
-      margin-bottom: 30px;
+  h1 {
+    text-align: center;
+    margin-bottom: 30px;
   }
 
   form {
-      input.error{
-          border-color: #faa;
-          background-color: #ffeded;
-      }
+    input.error {
+      border-color: #faa;
+      background-color: #ffeded;
+    }
   }
-  p{
-      text-align: center;
-      margin-top: 30px;
-      &:hover {
-          cursor: pointer;
-          opacity: 0.6;
-      }
+  p {
+    text-align: center;
+    margin-top: 30px;
+    &:hover {
+      cursor: pointer;
+      opacity: 0.6;
+    }
   }
 }
 </style>
