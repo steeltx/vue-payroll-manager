@@ -7,7 +7,7 @@
           type="text"
           placeholder="Correo electronico"
           v-model="formData.email"
-          :class="{error : formError.email }"
+          :class="{ error: formError.email }"
         />
       </div>
       <div class="field">
@@ -15,10 +15,14 @@
           type="password"
           placeholder="Contraseña"
           v-model="formData.password"
-          :class="{error : formError.password }"
+          :class="{ error: formError.password }"
         />
       </div>
-      <button type="submit" class="ui button positive fluid">
+      <button
+        type="submit"
+        class="ui button positive fluid"
+        :class="{ loading }"
+      >
         Entrar
       </button>
     </form>
@@ -29,6 +33,7 @@
 <script>
 import { ref } from "vue";
 import * as Yup from "yup";
+import { auth } from "../../utils/firebase";
 
 export default {
   name: "Login",
@@ -38,6 +43,7 @@ export default {
   setup() {
     let formData = {};
     let formError = ref({});
+    let loading = ref(false);
 
     const schemaForm = Yup.object().shape({
       email: Yup.string()
@@ -47,23 +53,33 @@ export default {
     });
 
     const onLogin = async () => {
+      // mostrar el loading en el boton
+      loading.value = true;
       // limpiar los errores
       formError.value = {};
       try {
         await schemaForm.validate(formData, { abortEarly: false });
-        console.log("Todo ok");
+
+        try {
+          const { email, password } = formData;
+          await auth.signInWithEmailAndPassword(email, password);
+        } catch (err) {
+          console.log(err);
+        }
       } catch (err) {
         err.inner.forEach((error) => {
-            // registrar en el objeto de error
-            formError.value[error.path] = error.message;
-        })
+          // registrar en el objeto de error
+          formError.value[error.path] = error.message;
+        });
       }
+      loading.value = false;
     };
 
     return {
       formData,
       onLogin,
-      formError
+      formError,
+      loading,
     };
   },
 };
