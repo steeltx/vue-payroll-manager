@@ -11,10 +11,10 @@
 
       <div class="menu right">
         <router-link class="item" to="/accout">
-          Hola, Roberto
+          Hola, {{ user.displayName || user.email }}
         </router-link>
 
-        <span class="ui item logout">
+        <span class="ui item logout" @click="logout">
           <i class="sign-out icon"></i>
         </span>
       </div>
@@ -23,7 +23,24 @@
 </template>
 
 <script>
-export default {};
+import { computed } from "vue";
+import { useStore } from "vuex";
+import { auth } from "../utils/firebase";
+
+export default {
+  name: "Menu",
+  setup() {
+    const store = useStore();
+    const user = computed(() => store.state.user);
+
+    const logout = () => auth.signOut();
+
+    return {
+      user,
+      logout,
+    };
+  },
+};
 </script>
 
 <style lang="scss" scoped>
