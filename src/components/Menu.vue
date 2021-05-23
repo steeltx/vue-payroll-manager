@@ -10,7 +10,7 @@
       </router-link>
 
       <div class="menu right">
-        <router-link class="item" to="/accout">
+        <router-link class="item" to="/account">
           Hola, {{ user.displayName || user.email }}
         </router-link>
 
