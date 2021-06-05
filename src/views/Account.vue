@@ -5,7 +5,7 @@
       <div class="account__section">
         <p class="title">
           Cambiar nombre
-          <span v-if="user.displayName">{{ user.displayName }}</span>
+          <span v-if="user.displayName">({{ user.displayName }})</span>
         </p>
         <ChangeName />
       </div>
