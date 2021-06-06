@@ -26,7 +26,8 @@
         />
       </div>
     </div>
-    <button type="submit" class="ui button primary">
+    <p v-if="messageError">{{ messageError }}</p>
+    <button type="submit" class="ui button primary" :class="{ loading }">
       Actualizar
     </button>
   </form>
@@ -35,12 +36,16 @@
 <script>
 import { ref } from "vue";
 import * as Yup from "yup";
+import { auth } from "../../utils/firebase";
+import { reauthenticate } from "../../utils/firebaseFunctions";
 
 export default {
   name: "ChangePassword",
   setup() {
     let formData = {};
     let formError = ref({});
+    let loading = ref(false);
+    let messageError = ref("");
 
     const schemaForm = Yup.object().shape({
       password: Yup.string().required(true),
@@ -52,20 +57,33 @@ export default {
 
     const onChangePassword = async () => {
       formError.value = {};
+      messageError.value = "";
+      loading.value = true;
       try {
         await schemaForm.validate(formData, { abortEarly: false });
-        console.log("ok");
+        try {
+          const { password, newPassword } = formData;
+          await reauthenticate(password);
+          await auth.currentUser.updatePassword(newPassword);
+          auth.signOut();
+        } catch (error) {
+          console.log(error);
+          messageError.value = error.message;
+        }
       } catch (err) {
         err.inner.forEach((error) => {
           formError.value[error.path] = error.message;
         });
       }
+      loading.value = false;
     };
 
     return {
       formData,
       onChangePassword,
       formError,
+      loading,
+      messageError,
     };
   },
 };
