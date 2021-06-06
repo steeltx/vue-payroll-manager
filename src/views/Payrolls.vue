@@ -1,22 +1,28 @@
 <template>
-<BasicLayout>
-  <h1>Estamos en Payrolls</h1>
-</BasicLayout>
+  <BasicLayout>
+    <div class="payrolls">
+      <h1>Mis nominas</h1>
+      <UploadPayroll />
+    </div>
+  </BasicLayout>
 </template>
 
 <script>
-
 import BasicLayout from "../layouts/BasicLayout";
-
+import UploadPayroll from "../components/Payrolls/UploadPayroll";
 
 export default {
-  name:"Payrolls",
-  components:{
-    BasicLayout
-  }
-}
+  name: "Payrolls",
+  components: {
+    BasicLayout,
+    UploadPayroll,
+  },
+};
 </script>
 
-<style>
-
+<style lang="scss" scoped>
+.payrolls {
+  margin: 50px 0;
+  text-align: center;
+}
 </style>
