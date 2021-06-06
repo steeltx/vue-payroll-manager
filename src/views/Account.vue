@@ -15,6 +15,10 @@
         </p>
         <ChangeEmail />
       </div>
+      <div class="account__section">
+        <p class="title">Cambiar contraseña</p>
+        <ChangePassword />
+      </div>
     </BasicLayout>
   </div>
 </template>
@@ -25,6 +29,7 @@ import { useStore } from "vuex";
 import BasicLayout from "../layouts/BasicLayout";
 import ChangeName from "../components/Account/ChangeName";
 import ChangeEmail from "../components/Account/ChangeEmail";
+import ChangePassword from "../components/Account/ChangePassword";
 
 export default {
   name: "Account",
@@ -32,6 +37,7 @@ export default {
     BasicLayout,
     ChangeName,
     ChangeEmail,
+    ChangePassword,
   },
   setup() {
     const store = useStore();
