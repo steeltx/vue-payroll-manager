@@ -3,18 +3,18 @@
     <button class="ui button primary" @click="showCloseForm">
       Nueva nomina
     </button>
-    <form class="ui form upload-payroll__form" :class="{ open: showForm }">
+    <form class="ui form upload-payroll__form" :class="{ open: showForm }" @submit.prevent="handleSubmit">
       <div class="field">
         <label for="file" class="ui icon button">
           <i class="file icon"></i>
           Seleccionar nomina
         </label>
-        <input type="file" id="file" style="display:none" />
+        <input type="file" id="file" style="display:none" @change="uploadFile" />
       </div>
       <div class="field">
         <div class="ui calendar">
           <div class="ui input left icon">
-            <input type="date" />
+            <input type="date" @change="changeDate" :value="date"/>
           </div>
         </div>
       </div>
@@ -31,14 +31,42 @@ export default {
   name: "UploadPayroll",
   setup() {
     let showForm = ref(false);
+    let file = ref(null);
+    let date = ref(null);
+    let loading = ref(false);
+    let error = ref(null);
 
     const showCloseForm = () => {
       showForm.value = !showForm.value;
     };
 
+    const uploadFile = (e) => {
+      console.log(e.target.files[0]);
+      const fileTemp = e.target.files[0];
+      if(fileTemp.type === "application/pdf"){
+        file.value = fileTemp;
+      }
+    };
+
+    const changeDate = (e) => {
+      date.value = e.target.value;
+    };
+
+    const handleSubmit = () => {
+      console.log("Subiendo nomima");
+      console.log(file);
+    }
+
     return {
       showForm,
+      uploadFile,
       showCloseForm,
+      handleSubmit,
+      changeDate,
+      file,
+      date,
+      loading,
+      error
     };
   },
 };
