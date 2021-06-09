@@ -3,24 +3,35 @@
     <button class="ui button primary" @click="showCloseForm">
       Nueva nomina
     </button>
-    <form class="ui form upload-payroll__form" :class="{ open: showForm }" @submit.prevent="handleSubmit">
+    <form
+      class="ui form upload-payroll__form"
+      :class="{ open: showForm }"
+      @submit.prevent="handleSubmit"
+    >
       <div class="field">
         <label for="file" class="ui icon button">
           <i class="file icon"></i>
           Seleccionar nomina
+          <span v-if="file">({{ file.name }})</span>
         </label>
-        <input type="file" id="file" style="display:none" @change="uploadFile" />
+        <input
+          type="file"
+          id="file"
+          style="display:none"
+          @change="uploadFile"
+        />
       </div>
       <div class="field">
         <div class="ui calendar">
           <div class="ui input left icon">
-            <input type="date" @change="changeDate" :value="date"/>
+            <input type="date" @change="changeDate" :value="date" />
           </div>
         </div>
       </div>
       <button class="ui button positive">
         Subir nomina
       </button>
+      <p v-if="error">{{ error }}</p>
     </form>
   </div>
 </template>
@@ -41,10 +52,13 @@ export default {
     };
 
     const uploadFile = (e) => {
-      console.log(e.target.files[0]);
+      // console.log(e.target.files[0]);
+      error.value = null;
       const fileTemp = e.target.files[0];
-      if(fileTemp.type === "application/pdf"){
+      if (fileTemp.type === "application/pdf") {
         file.value = fileTemp;
+      } else {
+        error.value = "Fichero no valido";
       }
     };
 
@@ -53,9 +67,10 @@ export default {
     };
 
     const handleSubmit = () => {
-      console.log("Subiendo nomima");
-      console.log(file);
-    }
+      if(file.value && date.value){
+        console.log("Subiendo nomina");
+      }
+    };
 
     return {
       showForm,
@@ -66,7 +81,7 @@ export default {
       file,
       date,
       loading,
-      error
+      error,
     };
   },
 };
