@@ -39,7 +39,7 @@
 <script>
 import { ref } from "vue";
 import { v4 as uuidv4 } from "uuid";
-import { auth, storage } from "../../utils/firebase";
+import { auth, storage, db } from "../../utils/firebase";
 
 export default {
   name: "UploadPayroll",
@@ -78,7 +78,18 @@ export default {
             .ref(auth.currentUser.uid)
             .child(`${nameFile}.pdf`)
             .put(file.value);
-            console.log("todo ok");
+
+          // obtener la url del archivo cargado
+          const payrollUrl = await storage
+            .ref(`${auth.currentUser.uid}/${nameFile}.pdf`)
+            .getDownloadURL();
+
+          // ingresar a la base de datos
+          await db.collection(auth.currentUser.uid).add({
+            payrollUrl,
+            date: new Date(date.value),
+            dateString: date.value,
+          });
         } catch (error) {
           console.log(error);
         }
