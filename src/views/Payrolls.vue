@@ -8,6 +8,8 @@
 </template>
 
 <script>
+import { ref, onMounted } from "vue";
+import { auth, db } from "../utils/firebase";
 import BasicLayout from "../layouts/BasicLayout";
 import UploadPayroll from "../components/Payrolls/UploadPayroll";
 
@@ -16,6 +18,27 @@ export default {
   components: {
     BasicLayout,
     UploadPayroll,
+  },
+  setup() {
+    let payrolls = ref(null);
+
+    onMounted(() => {
+      getPayrolls();
+    });
+
+    const getPayrolls = async () => {
+      const response = await db
+        .collection(auth.currentUser.uid)
+        .orderBy("date", "desc")
+        .get();
+      const result = [];
+      response.docs.forEach((doc) => {
+        const data = doc.data();
+        data.id = doc.id;
+        result.push(data);
+      });
+      payrolls.value = result;
+    };
   },
 };
 </script>
