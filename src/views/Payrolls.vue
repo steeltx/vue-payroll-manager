@@ -3,6 +3,7 @@
     <div class="payrolls">
       <h1>Mis nominas</h1>
       <UploadPayroll />
+      <PayrollList :payrolls="payrolls" />
     </div>
   </BasicLayout>
 </template>
@@ -12,12 +13,14 @@ import { ref, onMounted } from "vue";
 import { auth, db } from "../utils/firebase";
 import BasicLayout from "../layouts/BasicLayout";
 import UploadPayroll from "../components/Payrolls/UploadPayroll";
+import PayrollList from "../components/Payrolls/PayrollList.vue";
 
 export default {
   name: "Payrolls",
   components: {
     BasicLayout,
     UploadPayroll,
+    PayrollList,
   },
   setup() {
     let payrolls = ref(null);
@@ -38,6 +41,10 @@ export default {
         result.push(data);
       });
       payrolls.value = result;
+    };
+
+    return {
+      payrolls,
     };
   },
 };
