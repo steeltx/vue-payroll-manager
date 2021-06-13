@@ -28,7 +28,7 @@
           </div>
         </div>
       </div>
-      <button class="ui button positive">
+      <button class="ui button positive" :class="{ loading }">
         Subir nomina
       </button>
       <p v-if="error">{{ error }}</p>
@@ -93,7 +93,15 @@ export default {
         } catch (error) {
           console.log(error);
         }
-        console.log("Subiendo nomina");
+        // resetear los datos
+        loading.value = false;
+        file.value = null;
+        date.value = null;
+        showForm.value = false;
+        error.value = null;
+        document.getElementById("file").value = "";
+      } else {
+        error.value = "Sube una nomina y selecciona la fecha";
       }
     };
 
