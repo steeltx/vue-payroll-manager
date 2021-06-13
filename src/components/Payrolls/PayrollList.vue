@@ -11,8 +11,11 @@
       <p>{{ formatDate(payroll.dateString) }}</p>
       <div class="action">
         <a :href="payroll.payrollUrl" target="_blank" class="ui button positive"
-          >Descargar</a>
-        <button class="ui button red">Eliminar</button>
+          >Descargar</a
+        >
+        <button class="ui button red" @click="deletePayrolls(payroll.id)">
+          Eliminar
+        </button>
       </div>
     </div>
   </div>
@@ -21,18 +24,33 @@
 <script>
 import moment from "moment";
 import "moment/locale/es";
+import { auth, db } from "../../utils/firebase";
 
 export default {
   name: "PayrollList",
   props: {
     payrolls: Array,
+    getPayrolls: Function,
   },
-  setup() {
+  setup(props) {
     const formatDate = (date) => {
       return moment(date).format("MMMM [del] YYYY");
     };
+
+    const deletePayrolls = async (id) => {
+      try {
+        await db
+          .collection(auth.currentUser.uid)
+          .doc(id)
+          .delete();
+        props.getPayrolls();
+      } catch (error) {
+        console.log(error);
+      }
+    };
     return {
       formatDate,
+      deletePayrolls,
     };
   },
 };
