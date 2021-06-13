@@ -2,7 +2,7 @@
   <BasicLayout>
     <div class="payrolls">
       <h1>Mis nominas</h1>
-      <UploadPayroll />
+      <UploadPayroll :getPayrolls="getPayrolls"/>
       <PayrollList :payrolls="payrolls" />
     </div>
   </BasicLayout>
@@ -45,6 +45,7 @@ export default {
 
     return {
       payrolls,
+      getPayrolls
     };
   },
 };
